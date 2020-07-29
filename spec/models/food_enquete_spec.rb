@@ -37,4 +37,43 @@ RSpec.describe FoodEnquete, type: :model do
       end
     end
   end
-end
+
+ 
+
+     describe '入力項目の有無' do
+       context '必須入力であること' do
+         #itを複数書くことができる
+         it 'お客様が必須であること' do
+           new_enquete = FoodEnquete.new
+           #バリデーションエラーが発生することを検証する
+           expect(new_enquete).not_to be_valid
+           #必須入力のメッセージが含まれることを検証する
+           expect(new_enquete.errors[:name]).to include(I18n.t('errors.messages.blank'))
+         end
+
+         it 'メールアドレスが必須であること' do
+           new_enquete = FoodEnquete.new
+           expect(new_enquete).not_to be_valid
+           expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.blank'))
+         end
+
+         #itを複数書くことができる
+         it '登録できないこと' do
+           new_enquete = FoodEnquete.new
+
+           #保存に失敗することを検証する
+           expect(new_enquete.save).to be_falsey
+         end
+        end
+       end
+
+       context '任意入力であること' do
+         it 'ご意見・ご要望が任意であること' do
+           new_enquete = FoodEnquete.new
+           expect(new_enquete).not_to be_valid
+           #必須入力のメッセージが含まれないことを検証する
+           expect(new_enquete.errors[:request]).not_to include(I18n.t('errors.messages.blank'))
+         end
+         end
+       end
+
