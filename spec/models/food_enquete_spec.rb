@@ -75,6 +75,19 @@ RSpec.describe FoodEnquete, type: :model do
         end
       end
 
+        describe 'メールアドレスの形式' do
+          context '不正な形式のメールアドレスの場合' do
+            it 'エラーになること' do
+              new_enquete = FoodEnquete.new
+              #不正な形式のメールアドレスを入力する
+              new_enquete.mail = "taro.tanaka"
+              expect(new_enquete).not_to be_valid
+              #不正な形式のメッセージが含まれることを検証する
+              expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.invalid'))
+            end
+          end
+        end
+
         describe 'アンケート回答時の条件' do
           context 'メールアドレスを確認すること' do
             it '同じメールアドレスで再び回答できないこと' do
@@ -105,7 +118,35 @@ RSpec.describe FoodEnquete, type: :model do
               expect(re_enquete_tanaka.save).to be_falsey
               expect(FoodEnquete.all.size).to eq 1
             end
+
+          it '異なるメールアドレスで回答できること' do
+            enquete_tanaka = FoodEnquete.new(
+              name: '田中 太郎',
+              mail: 'taro.tanaka@example.com',
+              age: 25,
+              food_id: 2,
+              score: 3,
+              request: 'おいしかったです。',
+              present_id: 1
+            )
+            enquete_tanaka.save
+
+            enquete_yamada = FoodEnquete.new(
+              name: '山田 次郎',
+              mail: 'jiro.yamada@example.com',
+              age: 22,
+              food_id: 1,
+              score: 2,
+              request: '',
+              present_id: 0
+            )
+
+            expect(enquete_yamada).to be_valid
+            enquete_yamada.save
+            #問題なく登録できる
+            expect(FoodEnquete.all.size).to eq 2
           end
+        end
 
           context '年齢を確認すること' do
             it '未成年はビール飲み放題を選択できないこと' do
