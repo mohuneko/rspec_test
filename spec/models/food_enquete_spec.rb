@@ -7,15 +7,7 @@ RSpec.describe FoodEnquete, type: :model do
       it '正しく登録できること 料理：焼きそば food_id: 2,
                                      満足度： score: 3,
                                      希望するプレゼント：ビール飲み放題 present_id: 1)' do
-      enquete = FoodEnquete.new(
-        name: '田中 太郎',
-        mail: 'taro.tanaka@example.com',
-        age: 25,
-        food_id: 2,
-        score: 3,
-        request: 'おいしかったです。',
-        present_id: 1
-      )
+      enquete = FactoryBot.build(:food_enquete_tanaka)
       #バリデーションが通ることを検証
       expect(enquete).to be_valid
 
@@ -91,27 +83,9 @@ RSpec.describe FoodEnquete, type: :model do
         describe 'アンケート回答時の条件' do
           context 'メールアドレスを確認すること' do
             it '同じメールアドレスで再び回答できないこと' do
-              enquete_tanaka = FoodEnquete.new(
-                name: '田中 太郎',
-                mail: 'taro.tanaka@example.com',
-                age: 25,
-                food_id: 2,
-                score: 3,
-                request: 'おいしかったです。',
-                present_id: 1
-              )
-              enquete_tanaka.save
+              FactoryBot.create(:food_enquete_tanaka)
 
-              #2つ目のテストデータを作成する
-              re_enquete_tanaka = FoodEnquete.new(
-                name: '田中 太郎',
-                mail: 'taro.tanaka@example.com',
-                age: 25,
-                food_id: 0,
-                score: 1,
-                request: 'スープがぬるかった',
-                present_id: 0
-              )
+              re_enquete_tanaka = FactoryBot.build(:food_enquete_tanaka, food_id: 0, score: 1, present_id: 0, request: "スープがぬるかった")
               expect(re_enquete_tanaka).not_to be_valid
               #メールアドレスが既に存在するメッセージが含まれることを検証する
               expect(re_enquete_tanaka.errors[:mail]).to include(I18n.t('errors.messages.taken'))
@@ -120,26 +94,9 @@ RSpec.describe FoodEnquete, type: :model do
             end
 
           it '異なるメールアドレスで回答できること' do
-            enquete_tanaka = FoodEnquete.new(
-              name: '田中 太郎',
-              mail: 'taro.tanaka@example.com',
-              age: 25,
-              food_id: 2,
-              score: 3,
-              request: 'おいしかったです。',
-              present_id: 1
-            )
-            enquete_tanaka.save
-
-            enquete_yamada = FoodEnquete.new(
-              name: '山田 次郎',
-              mail: 'jiro.yamada@example.com',
-              age: 22,
-              food_id: 1,
-              score: 2,
-              request: '',
-              present_id: 0
-            )
+            FactoryBot.create(:food_enquete_tanaka)
+            
+            enquete_yamada = FactoryBot.build(:food_enquete_yamada)
 
             expect(enquete_yamada).to be_valid
             enquete_yamada.save
@@ -150,34 +107,17 @@ RSpec.describe FoodEnquete, type: :model do
 
           context '年齢を確認すること' do
             it '未成年はビール飲み放題を選択できないこと' do
-              # [Point.3-5-3]未成年のテストデータを作成します。
-              enquete_sato = FoodEnquete.new(
-                name: '佐藤 仁美',
-                mail: 'hitomi.sato@example.com',
-                age: 19,
-                food_id: 2,
-                score: 3,
-                request: 'おいしかったです。',
-                present_id: 1   # ビール飲み放題
-              )
-        
+
+              enquete_sato = FactoryBot.build(:food_enquete_sato)
+
               expect(enquete_sato).not_to be_valid
               # [Point.3-5-4]成人のみ選択できる旨のメッセージが含まれることを検証します。
               expect(enquete_sato.errors[:present_id]).to include(I18n.t('activerecord.errors.models.food_enquete.attributes.present_id.cannot_present_to_minor'))
             end
 
             it '成人はビール飲み放題を選択できないこと' do
-              #未成年のテストデータを作成する
-              enquete_sato = FoodEnquete.new(
-              name: '佐藤 仁美',
-              mail: 'hitomi.sato@example.com',
-              age: 20,
-              food_id: 2,
-              score: 3,
-              request: 'おいしかったです。',
-              present_id: 1 #ビール飲み放題
-            )
 
+            enquete_sato = FactoryBot.build(:food_enquete_sato, age: 20)
             #バリデーションが正常に通ることを検証する
             expect(enquete_sato).to be_valid
             end
