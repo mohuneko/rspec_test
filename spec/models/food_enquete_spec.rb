@@ -82,8 +82,12 @@ RSpec.describe FoodEnquete, type: :model do
 
         describe 'アンケート回答時の条件' do
           context 'メールアドレスを確認すること' do
-            it '同じメールアドレスで再び回答できないこと' do
+            #前処理を共通化して田中太郎のテストデータを作成する
+            before do
               FactoryBot.create(:food_enquete_tanaka)
+            end
+
+            it '同じメールアドレスで再び回答できないこと' do
 
               re_enquete_tanaka = FactoryBot.build(:food_enquete_tanaka, food_id: 0, score: 1, present_id: 0, request: "スープがぬるかった")
               expect(re_enquete_tanaka).not_to be_valid
@@ -94,8 +98,7 @@ RSpec.describe FoodEnquete, type: :model do
             end
 
           it '異なるメールアドレスで回答できること' do
-            FactoryBot.create(:food_enquete_tanaka)
-            
+
             enquete_yamada = FactoryBot.build(:food_enquete_yamada)
 
             expect(enquete_yamada).to be_valid
