@@ -32,10 +32,11 @@ RSpec.describe FoodEnquete, type: :model do
 
 
      describe '入力項目の有無' do
+      #インスタンスを共通化してテストデータを作成する
+      let(:new_enquete) { FoodEnquete.new }
        context '必須入力であること' do
          #itを複数書くことができる
          it 'お客様が必須であること' do
-           new_enquete = FoodEnquete.new
            #バリデーションエラーが発生することを検証する
            expect(new_enquete).not_to be_valid
            #必須入力のメッセージが含まれることを検証する
@@ -43,14 +44,12 @@ RSpec.describe FoodEnquete, type: :model do
          end
 
          it 'メールアドレスが必須であること' do
-           new_enquete = FoodEnquete.new
            expect(new_enquete).not_to be_valid
            expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.blank'))
          end
 
          #itを複数書くことができる
          it '登録できないこと' do
-           new_enquete = FoodEnquete.new
 
            #保存に失敗することを検証する
            expect(new_enquete.save).to be_falsey
@@ -59,7 +58,6 @@ RSpec.describe FoodEnquete, type: :model do
 
        context '任意入力であること' do
          it 'ご意見・ご要望が任意であること' do
-           new_enquete = FoodEnquete.new
            expect(new_enquete).not_to be_valid
            #必須入力のメッセージが含まれないことを検証する
            expect(new_enquete.errors[:request]).not_to include(I18n.t('errors.messages.blank'))
@@ -139,6 +137,12 @@ RSpec.describe FoodEnquete, type: :model do
              #成人になることを検証する
              expect(foodEnquete.send(:adult?, 20)).to be_truthy
            end
+         end
+
+         describe '共通メソッド' do
+           #共通化するテストケースを定義する
+           it_behaves_like '価格の表示'
+           it_behaves_like '満足度の表示'
          end
 
 end
