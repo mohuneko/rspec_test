@@ -30,54 +30,6 @@ RSpec.describe FoodEnquete, type: :model do
     end
   end
 
-
-     describe '入力項目の有無' do
-      #インスタンスを共通化してテストデータを作成する
-      let(:new_enquete) { FoodEnquete.new }
-       context '必須入力であること' do
-         #itを複数書くことができる
-         it 'お客様が必須であること' do
-           #バリデーションエラーが発生することを検証する
-           expect(new_enquete).not_to be_valid
-           #必須入力のメッセージが含まれることを検証する
-           expect(new_enquete.errors[:name]).to include(I18n.t('errors.messages.blank'))
-         end
-
-         it 'メールアドレスが必須であること' do
-           expect(new_enquete).not_to be_valid
-           expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.blank'))
-         end
-
-         #itを複数書くことができる
-         it '登録できないこと' do
-
-           #保存に失敗することを検証する
-           expect(new_enquete.save).to be_falsey
-         end
-        end
-
-       context '任意入力であること' do
-         it 'ご意見・ご要望が任意であること' do
-           expect(new_enquete).not_to be_valid
-           #必須入力のメッセージが含まれないことを検証する
-           expect(new_enquete.errors[:request]).not_to include(I18n.t('errors.messages.blank'))
-         end
-        end
-      end
-
-        describe 'メールアドレスの形式' do
-          context '不正な形式のメールアドレスの場合' do
-            it 'エラーになること' do
-              new_enquete = FoodEnquete.new
-              #不正な形式のメールアドレスを入力する
-              new_enquete.mail = "taro.tanaka"
-              expect(new_enquete).not_to be_valid
-              #不正な形式のメッセージが含まれることを検証する
-              expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.invalid'))
-            end
-          end
-        end
-
         describe 'アンケート回答時の条件' do
           context 'メールアドレスを確認すること' do
             #前処理を共通化して田中太郎のテストデータを作成する
@@ -137,6 +89,11 @@ RSpec.describe FoodEnquete, type: :model do
              #成人になることを検証する
              expect(foodEnquete.send(:adult?, 20)).to be_truthy
            end
+         end
+
+         describe '共通バリデーション' do
+           it_behaves_like '入力項目の有無'
+           it_behaves_like 'メールアドレスの形式'
          end
 
          describe '共通メソッド' do
