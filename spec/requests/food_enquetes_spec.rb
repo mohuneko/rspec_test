@@ -13,8 +13,9 @@ RSpec.describe "FoodEnquetes", type: :request do
        post "/food_enquetes",params: { food_enquete: FactoryBot.attributes_for(:food_enquete_tanaka) }
        #リダイレクト先に移動する
        follow_redirect!
-       #送信完了のメッセージが含まれることを検証する
-       expect(response.body).to include "お食事に関するアンケートを送信しました"
+       #回答完了のメッセージが含まれることを検証する
+       expect(response.body).to include "ご回答ありがとうございました"
+
      end
     end
   end
@@ -27,8 +28,8 @@ RSpec.describe "FoodEnquetes", type: :request do
 
         #異常な入力値を送信する
         post "/food_enquetes", params: { food_enquete: { name:''} }
-        #送信完了のメッセージが含まれないことを検証する
-        expect(response.body).not_to include "お食事に関するアンケートを送信しました"
+        #回答完了のメッセージが含まれないことを検証する
+        expect(response.body).not_to include "ご回答ありがとうございました"
       end
     end
   end
